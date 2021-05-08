@@ -1,6 +1,16 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "5.8.2"
+    id 'jacoco'
+    id "org.sonarqube" version "3.2.0"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "mersthamcc_keycloak-sms2fa"
+        property "sonar.organization", "mersthamcc"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 group 'uk.co.mersthamcc.keycloak'
@@ -57,4 +67,12 @@ task copyToLib(type: Copy) {
     from configurations.runtime
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+test.finalizedBy jacocoTestReport
+
 jar.dependsOn(copyToLib)
+tasks['sonarqube'].dependsOn test
