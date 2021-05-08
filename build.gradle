@@ -1,18 +1,6 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "5.8.2"
-    id 'jacoco'
-    id "org.sonarqube" version "3.0"
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "keycloak-mcc"
-        property "sonar.organization", "mersthamcc"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport.xml"
-        property "sonar.junit.reportsPath", "build/test-results/*/TEST-*.xml"
-    }
 }
 
 group 'uk.co.mersthamcc.keycloak'
@@ -69,12 +57,4 @@ task copyToLib(type: Copy) {
     from configurations.runtime
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled true
-    }
-}
-test.finalizedBy jacocoTestReport
-
 jar.dependsOn(copyToLib)
-tasks['sonarqube'].dependsOn test
