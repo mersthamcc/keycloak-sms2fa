@@ -26,9 +26,10 @@ public class ConditionalOtpConfigureOtpAction implements RequiredActionProvider 
         UserModel user = context.getUser();
         String mobileNumber = user.getFirstAttribute(MOBILE_PHONE_ATTR);
 
-        Response challenge = context.form()
-                .setAttribute(PHONE_NUMBER_TEMPLATE_ATTRIBUTE, mobileNumber)
-                .createForm(CONFIGURE_SMS_FORM);
+        Response challenge =
+                context.form()
+                        .setAttribute(PHONE_NUMBER_TEMPLATE_ATTRIBUTE, mobileNumber)
+                        .createForm(CONFIGURE_SMS_FORM);
         context.challenge(challenge);
     }
 
@@ -43,14 +44,17 @@ public class ConditionalOtpConfigureOtpAction implements RequiredActionProvider 
             } else {
                 context.failure();
             }
-        } else if (form.containsKey(PHONE_NUMBER_FIELD)){
+        } else if (form.containsKey(PHONE_NUMBER_FIELD)) {
             if (ConditionalOtpSmsHelper.processUpdate(context.getUser(), form)) {
-                provider.send(context.getAuthenticationSession(), user.getFirstAttribute(MOBILE_PHONE_ATTR));
+                provider.send(
+                        context.getAuthenticationSession(),
+                        user.getFirstAttribute(MOBILE_PHONE_ATTR));
                 context.challenge(context.form().createLoginTotp());
             } else {
-                Response challenge = context.form()
-                        .setError("mobile_number.no.valid")
-                        .createForm(CONFIGURE_SMS_FORM);
+                Response challenge =
+                        context.form()
+                                .setError("mobile_number.no.valid")
+                                .createForm(CONFIGURE_SMS_FORM);
                 context.challenge(challenge);
             }
         } else {

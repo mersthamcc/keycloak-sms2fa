@@ -17,12 +17,13 @@ import static uk.co.mersthamcc.keycloak.ConditionalOtpConstants.CONFIG_PROPERTY_
 public class ConditionalTwoFactorAuthenticatorFactory implements AuthenticatorFactory {
 
     private static final String PROVIDER_ID = "mcc-two-factor-authentication";
-    private static final ConditionalTwoFactorAuthenticator SINGLETON_INSTANCE = new ConditionalTwoFactorAuthenticator();
+    private static final ConditionalTwoFactorAuthenticator SINGLETON_INSTANCE =
+            new ConditionalTwoFactorAuthenticator();
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
-            AuthenticationExecutionModel.Requirement.REQUIRED,
-            AuthenticationExecutionModel.Requirement.ALTERNATIVE,
-            AuthenticationExecutionModel.Requirement.DISABLED
+        AuthenticationExecutionModel.Requirement.REQUIRED,
+        AuthenticationExecutionModel.Requirement.ALTERNATIVE,
+        AuthenticationExecutionModel.Requirement.DISABLED
     };
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
@@ -38,7 +39,7 @@ public class ConditionalTwoFactorAuthenticatorFactory implements AuthenticatorFa
         configProperties.add(property);
     }
 
-        @Override
+    @Override
     public String getDisplayType() {
         return "MCC 2FA Authentication with SMS";
     }

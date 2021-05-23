@@ -11,7 +11,8 @@ import static org.mockito.Mockito.mock;
 
 class ConditionalOtpConfigureOtpActionFactoryTest {
 
-    private final ConditionalOtpConfigureOtpActionFactory factory = new ConditionalOtpConfigureOtpActionFactory();
+    private final ConditionalOtpConfigureOtpActionFactory factory =
+            new ConditionalOtpConfigureOtpActionFactory();
 
     @Test
     void create() {

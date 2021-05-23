@@ -15,8 +15,7 @@ class DummySmsProviderTest {
 
     DummySmsProvider provider = new DummySmsProvider();
 
-    @Mock
-    AuthenticationSessionModel session;
+    @Mock AuthenticationSessionModel session;
 
     @Test
     void getName() {

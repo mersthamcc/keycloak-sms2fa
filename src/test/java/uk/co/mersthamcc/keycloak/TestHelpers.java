@@ -13,10 +13,12 @@ public class TestHelpers {
 
     public static final String MOBILE_NUMBER = "+447777123456";
 
-    public static MockedStatic<SmsProviderFactory> createSmsProviderFactoryStaticMock(boolean validateWillSucceed) {
+    public static MockedStatic<SmsProviderFactory> createSmsProviderFactoryStaticMock(
+            boolean validateWillSucceed) {
         MockedStatic<SmsProviderFactory> utilsMockedStatic = mockStatic(SmsProviderFactory.class);
         SmsProvider provider = mock(SmsProvider.class);
-        when(provider.validate(any(AuthenticationSessionModel.class), anyString())).thenReturn(validateWillSucceed);
+        when(provider.validate(any(AuthenticationSessionModel.class), anyString()))
+                .thenReturn(validateWillSucceed);
         utilsMockedStatic.when(SmsProviderFactory::create).thenReturn(provider);
         return utilsMockedStatic;
     }
