@@ -23,7 +23,9 @@ public class ConditionalTwoFactorAuthenticator implements Authenticator {
             if (user.getAttributes().containsKey(MOBILE_PHONE_ATTR)) {
                 SmsProvider provider = getSmsProvider();
 
-                provider.send(context.getAuthenticationSession(), user.getFirstAttribute(MOBILE_PHONE_ATTR));
+                provider.send(
+                        context.getAuthenticationSession(),
+                        user.getFirstAttribute(MOBILE_PHONE_ATTR));
                 context.challenge(context.form().createLoginTotp());
             } else {
                 setRequiredActions(context.getSession(), context.getRealm(), user);
@@ -75,7 +77,10 @@ public class ConditionalTwoFactorAuthenticator implements Authenticator {
         AuthenticatorConfigModel authenticatorConfig = context.getAuthenticatorConfig();
         UserModel user = context.getUser();
 
-        return userHasRole(context.getRealm(), user, authenticatorConfig.getConfig().get(CONFIG_PROPERTY_FORCE_OTP_ROLE));
+        return userHasRole(
+                context.getRealm(),
+                user,
+                authenticatorConfig.getConfig().get(CONFIG_PROPERTY_FORCE_OTP_ROLE));
     }
 
     private boolean userHasRole(RealmModel realm, UserModel user, String roleName) {

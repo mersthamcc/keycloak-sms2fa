@@ -18,14 +18,21 @@ public class SmsProviderFactory {
     }
 
     public static SmsProvider create() {
-        ServiceLoader<SmsProvider> providerServiceLoader = ServiceLoader.load(SmsProvider.class, SmsProvider.class.getClassLoader());
+        ServiceLoader<SmsProvider> providerServiceLoader =
+                ServiceLoader.load(SmsProvider.class, SmsProvider.class.getClassLoader());
         providerServiceLoader.reload();
         for (SmsProvider p : providerServiceLoader) {
             logger.info(format("Found SMS Provider %s", p.getClass().getName()));
         }
         logger.info(format("Found %d SMS Provider(s)", providerServiceLoader.stream().count()));
-        String providerName = System.getenv().getOrDefault(SMS_PROVIDER_ENVIRONMENT_VARIABLE, DummySmsProvider.PROVIDER_NAME);
-        Optional<ServiceLoader.Provider<SmsProvider>> provider = providerServiceLoader.stream().filter(p -> p.get().getName().equals(providerName)).findFirst();
+        String providerName =
+                System.getenv()
+                        .getOrDefault(
+                                SMS_PROVIDER_ENVIRONMENT_VARIABLE, DummySmsProvider.PROVIDER_NAME);
+        Optional<ServiceLoader.Provider<SmsProvider>> provider =
+                providerServiceLoader.stream()
+                        .filter(p -> p.get().getName().equals(providerName))
+                        .findFirst();
         return provider.isPresent() ? provider.get().get() : null;
     }
 }

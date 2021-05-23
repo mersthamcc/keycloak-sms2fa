@@ -36,18 +36,17 @@ class MessageBirdSmsProviderTest {
 
     private static final String VERIFY_TOKEN_VALUE = "abcd1234";
 
-    private static final Verify VERIFY_RESPONSE = new Verify() {
-        @Override
-        public String getId() {
-            return VERIFY_TOKEN_VALUE;
-        }
-    };
+    private static final Verify VERIFY_RESPONSE =
+            new Verify() {
+                @Override
+                public String getId() {
+                    return VERIFY_TOKEN_VALUE;
+                }
+            };
 
-    @Mock
-    MessageBirdClient mockClient;
+    @Mock MessageBirdClient mockClient;
 
-    @Mock
-    AuthenticationSessionModel session;
+    @Mock AuthenticationSessionModel session;
 
     MessageBirdSmsProvider provider = new TestMessageBirdSmsProvider();
 
@@ -59,9 +58,11 @@ class MessageBirdSmsProviderTest {
     @Test
     void sendStoresTokenAsSessionNote() throws UnauthorizedException, GeneralException {
         VerifyRequest request = new VerifyRequest(MOBILE_NUMBER);
-        when(mockClient.sendVerifyToken(argThat(matchesRequest(request)))).thenReturn(VERIFY_RESPONSE);
+        when(mockClient.sendVerifyToken(argThat(matchesRequest(request))))
+                .thenReturn(VERIFY_RESPONSE);
         provider.send(session, MOBILE_NUMBER);
-        verify(session).setUserSessionNote(eq(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE), eq(VERIFY_TOKEN_VALUE));
+        verify(session)
+                .setUserSessionNote(eq(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE), eq(VERIFY_TOKEN_VALUE));
     }
 
     @Test
@@ -70,47 +71,62 @@ class MessageBirdSmsProviderTest {
         MessageBirdSmsProvider testProvider = new TestMessageBirdSmsProvider();
         VerifyRequest request = new VerifyRequest(MOBILE_NUMBER);
         request.setOriginator("MCC");
-        when(mockClient.sendVerifyToken(argThat(matchesRequest(request)))).thenReturn(VERIFY_RESPONSE);
+        when(mockClient.sendVerifyToken(argThat(matchesRequest(request))))
+                .thenReturn(VERIFY_RESPONSE);
         testProvider.send(session, MOBILE_NUMBER);
-        verify(session).setUserSessionNote(eq(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE), eq(VERIFY_TOKEN_VALUE));
+        verify(session)
+                .setUserSessionNote(eq(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE), eq(VERIFY_TOKEN_VALUE));
     }
 
     @ParameterizedTest
     @ValueSource(classes = {UnauthorizedException.class, GeneralException.class})
-    void sendThrowsIfMessageBirdExceptionOccurs(Class<Throwable> exceptionClass) throws UnauthorizedException, GeneralException {
+    void sendThrowsIfMessageBirdExceptionOccurs(Class<Throwable> exceptionClass)
+            throws UnauthorizedException, GeneralException {
         VerifyRequest request = new VerifyRequest(MOBILE_NUMBER);
-        when(mockClient.sendVerifyToken(argThat(matchesRequest(request)))).thenThrow(exceptionClass);
+        when(mockClient.sendVerifyToken(argThat(matchesRequest(request))))
+                .thenThrow(exceptionClass);
         assertThrows(SmsProviderException.class, () -> provider.send(session, MOBILE_NUMBER));
     }
 
     @Test
-    void validateMatchesCorrectCode() throws UnauthorizedException, GeneralException, NotFoundException {
+    void validateMatchesCorrectCode()
+            throws UnauthorizedException, GeneralException, NotFoundException {
         Verify response = new Verify();
         response.setId(VERIFY_TOKEN_VALUE);
         response.setStatus("verified");
         response.setRecipient(MOBILE_NUMBER);
-        when(session.getUserSessionNotes()).thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
+        when(session.getUserSessionNotes())
+                .thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
         when(mockClient.verifyToken(eq(VERIFY_TOKEN_VALUE), eq("123456"))).thenReturn(response);
 
         assertThat(provider.validate(session, "123456"), is(true));
     }
 
     @Test
-    void validateFailsWithIncorrectCode() throws UnauthorizedException, GeneralException, NotFoundException {
+    void validateFailsWithIncorrectCode()
+            throws UnauthorizedException, GeneralException, NotFoundException {
         Verify response = new Verify();
         response.setId(VERIFY_TOKEN_VALUE);
         response.setStatus("failed");
         response.setRecipient(MOBILE_NUMBER);
-        when(session.getUserSessionNotes()).thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
+        when(session.getUserSessionNotes())
+                .thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
         when(mockClient.verifyToken(eq(VERIFY_TOKEN_VALUE), eq("123456"))).thenReturn(response);
 
         assertThat(provider.validate(session, "123456"), is(false));
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {UnauthorizedException.class, GeneralException.class, NotFoundException.class})
-    void validateThrowsIfOnMessageBirdError(Class<Throwable> exception) throws UnauthorizedException, GeneralException, NotFoundException {
-        when(session.getUserSessionNotes()).thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
+    @ValueSource(
+            classes = {
+                UnauthorizedException.class,
+                GeneralException.class,
+                NotFoundException.class
+            })
+    void validateThrowsIfOnMessageBirdError(Class<Throwable> exception)
+            throws UnauthorizedException, GeneralException, NotFoundException {
+        when(session.getUserSessionNotes())
+                .thenReturn(Map.of(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, VERIFY_TOKEN_VALUE));
         when(mockClient.verifyToken(eq(VERIFY_TOKEN_VALUE), eq("123456"))).thenThrow(exception);
 
         assertThrows(SmsProviderException.class, () -> provider.validate(session, "123456"));
@@ -130,10 +146,12 @@ class MessageBirdSmsProviderTest {
 
         @Override
         public boolean matches(VerifyRequest actual) {
-            if (expected.getOriginator() == null ) {
-                return expected.getRecipient().equals(actual.getRecipient()) && actual.getOriginator() == null;
+            if (expected.getOriginator() == null) {
+                return expected.getRecipient().equals(actual.getRecipient())
+                        && actual.getOriginator() == null;
             }
-            return expected.getRecipient().equals(actual.getRecipient()) && expected.getOriginator().equals(actual.getOriginator());
+            return expected.getRecipient().equals(actual.getRecipient())
+                    && expected.getOriginator().equals(actual.getOriginator());
         }
     }
 

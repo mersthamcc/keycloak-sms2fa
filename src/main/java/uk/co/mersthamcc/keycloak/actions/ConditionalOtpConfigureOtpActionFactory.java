@@ -8,7 +8,8 @@ import org.keycloak.models.KeycloakSessionFactory;
 
 public class ConditionalOtpConfigureOtpActionFactory implements RequiredActionFactory {
 
-    private static final ConditionalOtpConfigureOtpAction SINGLETON = new ConditionalOtpConfigureOtpAction();
+    private static final ConditionalOtpConfigureOtpAction SINGLETON =
+            new ConditionalOtpConfigureOtpAction();
 
     public RequiredActionProvider create(KeycloakSession session) {
         return SINGLETON;

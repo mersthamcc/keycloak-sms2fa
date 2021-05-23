@@ -14,6 +14,7 @@ import uk.co.mersthamcc.keycloak.smsprovider.SmsProviderFactory;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,8 @@ class ConditionalTwoFactorAuthenticatorTest {
 
     private static final String OTP_ROLE = "OTP_ROLE";
 
-    private ConditionalTwoFactorAuthenticator authenticator = new ConditionalTwoFactorAuthenticator();
+    private ConditionalTwoFactorAuthenticator authenticator =
+            new ConditionalTwoFactorAuthenticator();
 
     AuthenticationFlowContext context;
     Response otpFormResponse;
@@ -37,18 +39,15 @@ class ConditionalTwoFactorAuthenticatorTest {
 
     private void setupAuthenticateMocks(boolean userHasRole, boolean userHasPhoneNumber) {
         AuthenticatorConfigModel config = new AuthenticatorConfigModel();
-        config.setConfig(Map.of(
-                CONFIG_PROPERTY_FORCE_OTP_ROLE, OTP_ROLE
-        ));
+        config.setConfig(Map.of(CONFIG_PROPERTY_FORCE_OTP_ROLE, OTP_ROLE));
         UserModel user = mock(UserModel.class);
         role = mock(RoleModel.class);
         when(role.getName()).thenReturn(OTP_ROLE);
         when(user.hasRole(eq(role))).thenReturn(userHasRole);
 
         if (userHasPhoneNumber) {
-            when(user.getAttributes()).thenReturn(Map.of(
-                    MOBILE_PHONE_ATTR, List.of(MOBILE_NUMBER)
-            ));
+            when(user.getAttributes())
+                    .thenReturn(Map.of(MOBILE_PHONE_ATTR, List.of(MOBILE_NUMBER)));
         }
 
         context = mock(AuthenticationFlowContext.class);
@@ -73,14 +72,20 @@ class ConditionalTwoFactorAuthenticatorTest {
 
     private MockedStatic<KeycloakModelUtils> createKeycloakUtilsStaticMock() {
         MockedStatic<KeycloakModelUtils> utilsMockedStatic = mockStatic(KeycloakModelUtils.class);
-        utilsMockedStatic.when( () -> { KeycloakModelUtils.getRoleFromString(any(), eq(OTP_ROLE)); }).thenReturn(role);
+        utilsMockedStatic
+                .when(
+                        () -> {
+                            KeycloakModelUtils.getRoleFromString(any(), eq(OTP_ROLE));
+                        })
+                .thenReturn(role);
         return utilsMockedStatic;
     }
 
     @Test
     void authenticateDisplayOtpFormIfConfigured() {
         setupAuthenticateMocks(true, true);
-        try(MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic = createKeycloakUtilsStaticMock()) {
+        try (MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic =
+                createKeycloakUtilsStaticMock()) {
             authenticator.authenticate(context);
             verify(context).challenge(eq(otpFormResponse));
         }
@@ -89,7 +94,8 @@ class ConditionalTwoFactorAuthenticatorTest {
     @Test
     void authenticateSucceedsIfNotInRole() {
         setupAuthenticateMocks(false, false);
-        try(MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic = createKeycloakUtilsStaticMock()) {
+        try (MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic =
+                createKeycloakUtilsStaticMock()) {
             authenticator.authenticate(context);
             verify(context).success();
             verify(context.getUser(), times(0)).addRequiredAction(any(String.class));
@@ -99,17 +105,20 @@ class ConditionalTwoFactorAuthenticatorTest {
     @Test
     void authenticateSucceedsButAddsRequiredActionIfUserHasRoleButNoPhoneNumber() {
         setupAuthenticateMocks(true, false);
-        try(MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic = createKeycloakUtilsStaticMock()) {
+        try (MockedStatic<KeycloakModelUtils> modelUtilsMockedStatic =
+                createKeycloakUtilsStaticMock()) {
             authenticator.authenticate(context);
             verify(context).success();
-            verify(context.getUser()).addRequiredAction(eq(ConditionalOtpConfigureOtpAction.PROVIDER_ID));
+            verify(context.getUser())
+                    .addRequiredAction(eq(ConditionalOtpConfigureOtpAction.PROVIDER_ID));
         }
     }
 
     @Test
     void actionSuccedsIfCodeIsCorrect() {
         setupActionMocks();
-        try(MockedStatic<SmsProviderFactory> smsProviderFactoryMockedStatic = createSmsProviderFactoryStaticMock(true)) {
+        try (MockedStatic<SmsProviderFactory> smsProviderFactoryMockedStatic =
+                createSmsProviderFactoryStaticMock(true)) {
             authenticator.action(context);
             verify(context).success();
         }
@@ -118,7 +127,8 @@ class ConditionalTwoFactorAuthenticatorTest {
     @Test
     void actionSuccedsIfCodeIsIncorrect() {
         setupActionMocks();
-        try(MockedStatic<SmsProviderFactory> smsProviderFactoryMockedStatic = createSmsProviderFactoryStaticMock(false)) {
+        try (MockedStatic<SmsProviderFactory> smsProviderFactoryMockedStatic =
+                createSmsProviderFactoryStaticMock(false)) {
             authenticator.action(context);
             verify(context).failure(eq(AuthenticationFlowError.EXPIRED_CODE));
         }
@@ -131,6 +141,9 @@ class ConditionalTwoFactorAuthenticatorTest {
 
     @Test
     void configuredFor() {
-        assertThat(authenticator.configuredFor(mock(KeycloakSession.class), mock(RealmModel.class), mock(UserModel.class)), is(true));
+        assertThat(
+                authenticator.configuredFor(
+                        mock(KeycloakSession.class), mock(RealmModel.class), mock(UserModel.class)),
+                is(true));
     }
 }

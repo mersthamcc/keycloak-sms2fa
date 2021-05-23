@@ -5,10 +5,9 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import uk.co.mersthamcc.keycloak.smsprovider.dummy.DummySmsProvider;
 import uk.co.mersthamcc.keycloak.smsprovider.messagebird.MessageBirdSmsProvider;
 
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static uk.co.mersthamcc.keycloak.ConditionalOtpConstants.SMS_PROVIDER_ENVIRONMENT_VARIABLE;
-
 
 class SmsProviderFactoryTest {
     @Test
@@ -18,7 +17,9 @@ class SmsProviderFactoryTest {
     }
 
     @Test
-    @SetEnvironmentVariable(key = SMS_PROVIDER_ENVIRONMENT_VARIABLE, value = MessageBirdSmsProvider.PROVIDER_NAME)
+    @SetEnvironmentVariable(
+            key = SMS_PROVIDER_ENVIRONMENT_VARIABLE,
+            value = MessageBirdSmsProvider.PROVIDER_NAME)
     void createWithMessageProvider() {
         SmsProvider provider = SmsProviderFactory.create();
         assertThat(MessageBirdSmsProvider.class, equalTo(provider.getClass()));

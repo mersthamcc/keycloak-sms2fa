@@ -17,6 +17,7 @@ import uk.co.mersthamcc.keycloak.smsprovider.SmsProviderFactory;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,17 +32,13 @@ class ConditionalOtpConfigureOtpActionTest {
 
     ConditionalOtpConfigureOtpAction action = new ConditionalOtpConfigureOtpAction();
 
-    @Mock
-    RequiredActionContext context;
+    @Mock RequiredActionContext context;
 
-    @Mock
-    UserModel user;
+    @Mock UserModel user;
 
-    @Mock
-    LoginFormsProvider provider;
+    @Mock LoginFormsProvider provider;
 
-    @Mock
-    Response smsConfigureForm;
+    @Mock Response smsConfigureForm;
 
     private void setupChallengeMocks() {
         when(context.getUser()).thenReturn(user);
@@ -52,13 +49,17 @@ class ConditionalOtpConfigureOtpActionTest {
         HttpRequest request = mock(HttpRequest.class);
         when(request.getDecodedFormParameters()).thenReturn(form);
         when(context.getHttpRequest()).thenReturn(request);
-        if (mockSession) when(context.getAuthenticationSession()).thenReturn(mock(AuthenticationSessionModel.class));
+        if (mockSession)
+            when(context.getAuthenticationSession())
+                    .thenReturn(mock(AuthenticationSessionModel.class));
     }
+
     @Test
     void requiredActionChallengeWhenUserHasAPhoneNumberConfigured() {
         setupChallengeMocks();
         when(user.getFirstAttribute(eq(MOBILE_PHONE_ATTR))).thenReturn(MOBILE_NUMBER);
-        when(provider.setAttribute(eq(PHONE_NUMBER_TEMPLATE_ATTRIBUTE), eq(MOBILE_NUMBER))).thenReturn(provider);
+        when(provider.setAttribute(eq(PHONE_NUMBER_TEMPLATE_ATTRIBUTE), eq(MOBILE_NUMBER)))
+                .thenReturn(provider);
         when(provider.createForm(eq(CONFIGURE_SMS_FORM))).thenReturn(smsConfigureForm);
 
         action.requiredActionChallenge(context);
@@ -68,7 +69,8 @@ class ConditionalOtpConfigureOtpActionTest {
     @Test
     void processActionUpdatePhoneNumberAndSendVerification() {
         setupChallengeMocks();
-        when(provider.setAttribute(eq(PHONE_NUMBER_TEMPLATE_ATTRIBUTE), isNull())).thenReturn(provider);
+        when(provider.setAttribute(eq(PHONE_NUMBER_TEMPLATE_ATTRIBUTE), isNull()))
+                .thenReturn(provider);
         when(provider.createForm(eq(CONFIGURE_SMS_FORM))).thenReturn(smsConfigureForm);
 
         action.requiredActionChallenge(context);
@@ -77,7 +79,8 @@ class ConditionalOtpConfigureOtpActionTest {
 
     @Test
     void processActionCheckVerificationAndSucceed() {
-        try(MockedStatic<SmsProviderFactory> factoryMockedStatic = createSmsProviderFactoryStaticMock(true)) {
+        try (MockedStatic<SmsProviderFactory> factoryMockedStatic =
+                createSmsProviderFactoryStaticMock(true)) {
             MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
             form.put(OTP_FIELD, List.of("123456"));
             setupActionMocks(form, true);
@@ -88,7 +91,8 @@ class ConditionalOtpConfigureOtpActionTest {
 
     @Test
     void processActionCheckVerificationAndFail() {
-        try(MockedStatic<SmsProviderFactory> factoryMockedStatic = createSmsProviderFactoryStaticMock(false)) {
+        try (MockedStatic<SmsProviderFactory> factoryMockedStatic =
+                createSmsProviderFactoryStaticMock(false)) {
             MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
             form.put(OTP_FIELD, List.of("123456"));
             setupActionMocks(form, true);
@@ -100,14 +104,18 @@ class ConditionalOtpConfigureOtpActionTest {
     @Test
     void processActionUpdatePhoneNumberAndChallengeForVerification() {
         setupChallengeMocks();
-        try(MockedStatic<SmsProviderFactory> utilsMockedStatic = mockStatic(SmsProviderFactory.class)) {
+        try (MockedStatic<SmsProviderFactory> utilsMockedStatic =
+                mockStatic(SmsProviderFactory.class)) {
             SmsProvider smsProvider = mock(SmsProvider.class);
             utilsMockedStatic.when(SmsProviderFactory::create).thenReturn(smsProvider);
 
-            try (MockedStatic<ConditionalOtpSmsHelper> helperMockedStatic = mockStatic(ConditionalOtpSmsHelper.class)) {
+            try (MockedStatic<ConditionalOtpSmsHelper> helperMockedStatic =
+                    mockStatic(ConditionalOtpSmsHelper.class)) {
                 MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
                 form.put(PHONE_NUMBER_FIELD, List.of(MOBILE_NUMBER));
-                helperMockedStatic.when(() -> ConditionalOtpSmsHelper.processUpdate(eq(user), eq(form))).thenReturn(true);
+                helperMockedStatic
+                        .when(() -> ConditionalOtpSmsHelper.processUpdate(eq(user), eq(form)))
+                        .thenReturn(true);
                 when(user.getFirstAttribute(eq(MOBILE_PHONE_ATTR))).thenReturn(MOBILE_NUMBER);
                 setupActionMocks(form, true);
                 Response verifyForm = mock(Response.class);
@@ -124,14 +132,18 @@ class ConditionalOtpConfigureOtpActionTest {
     @Test
     void processActionUpdatePhoneNumberFails() {
         setupChallengeMocks();
-        try(MockedStatic<SmsProviderFactory> utilsMockedStatic = mockStatic(SmsProviderFactory.class)) {
+        try (MockedStatic<SmsProviderFactory> utilsMockedStatic =
+                mockStatic(SmsProviderFactory.class)) {
             SmsProvider smsProvider = mock(SmsProvider.class);
             utilsMockedStatic.when(SmsProviderFactory::create).thenReturn(smsProvider);
 
-            try (MockedStatic<ConditionalOtpSmsHelper> helperMockedStatic = mockStatic(ConditionalOtpSmsHelper.class)) {
+            try (MockedStatic<ConditionalOtpSmsHelper> helperMockedStatic =
+                    mockStatic(ConditionalOtpSmsHelper.class)) {
                 MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
                 form.put(PHONE_NUMBER_FIELD, List.of(MOBILE_NUMBER));
-                helperMockedStatic.when(() -> ConditionalOtpSmsHelper.processUpdate(eq(user), eq(form))).thenReturn(false);
+                helperMockedStatic
+                        .when(() -> ConditionalOtpSmsHelper.processUpdate(eq(user), eq(form)))
+                        .thenReturn(false);
                 setupActionMocks(form, false);
                 when(context.form()).thenReturn(provider);
                 when(provider.setError(anyString(), any())).thenReturn(provider);

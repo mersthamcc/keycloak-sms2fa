@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id "com.diffplug.spotless" version "5.8.2"
     id 'jacoco'
     id "org.sonarqube" version "3.2.0"
+    id "com.diffplug.spotless"
 }
 
 sonarqube {
@@ -65,6 +65,19 @@ dependencies {
 task copyToLib(type: Copy) {
     into "$buildDir/libs"
     from configurations.runtime
+}
+
+
+spotless {
+    java {
+        target '**/*.java'
+        googleJavaFormat('1.9').aosp()
+        importOrder '', 'javax', 'java', '\\#'
+    }
+
+    groovyGradle {
+        target '**/*.gradle'
+    }
 }
 
 jacocoTestReport {

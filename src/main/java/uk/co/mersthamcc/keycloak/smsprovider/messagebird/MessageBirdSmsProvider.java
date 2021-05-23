@@ -32,11 +32,12 @@ public class MessageBirdSmsProvider implements SmsProvider {
     public void send(AuthenticationSessionModel session, String phoneNumber) {
         try {
             VerifyRequest request = new VerifyRequest(phoneNumber);
-            if (originator != null ) request.setOriginator(originator);
+            if (originator != null) request.setOriginator(originator);
             String id = getClient().sendVerifyToken(request).getId();
             session.setUserSessionNote(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, id);
         } catch (UnauthorizedException e) {
-            throw new SmsProviderException("UnauthorizedException encountered while sending SMS code via MessageBird", e);
+            throw new SmsProviderException(
+                    "UnauthorizedException encountered while sending SMS code via MessageBird", e);
         } catch (GeneralException e) {
             throw new SmsProviderException("Error sending SMS code via MessageBird", e);
         }
@@ -48,17 +49,22 @@ public class MessageBirdSmsProvider implements SmsProvider {
             String id = session.getUserSessionNotes().get(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE);
             return getClient().verifyToken(id, code).getStatus().equals("verified");
         } catch (NotFoundException e) {
-            throw new SmsProviderException("NotFoundException encountered while validating code via MessageBird", e);
+            throw new SmsProviderException(
+                    "NotFoundException encountered while validating code via MessageBird", e);
         } catch (GeneralException e) {
             throw new SmsProviderException("Error while validating code via MessageBird", e);
         } catch (UnauthorizedException e) {
-            throw new SmsProviderException("UnauthorizedException encountered while validating code via MessageBird", e);
+            throw new SmsProviderException(
+                    "UnauthorizedException encountered while validating code via MessageBird", e);
         }
     }
 
     protected MessageBirdClient getClient() {
         if (client == null) {
-            client = new MessageBirdClient(new MessageBirdServiceImpl(System.getenv(API_TOKEN_ENVIRONMENT_VARIABLE)));
+            client =
+                    new MessageBirdClient(
+                            new MessageBirdServiceImpl(
+                                    System.getenv(API_TOKEN_ENVIRONMENT_VARIABLE)));
         }
         return client;
     }

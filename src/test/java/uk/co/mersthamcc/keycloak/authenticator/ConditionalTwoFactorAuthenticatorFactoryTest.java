@@ -17,7 +17,8 @@ import static uk.co.mersthamcc.keycloak.ConditionalOtpConstants.CONFIG_PROPERTY_
 
 class ConditionalTwoFactorAuthenticatorFactoryTest {
 
-    private final ConditionalTwoFactorAuthenticatorFactory factory = new ConditionalTwoFactorAuthenticatorFactory();
+    private final ConditionalTwoFactorAuthenticatorFactory factory =
+            new ConditionalTwoFactorAuthenticatorFactory();
 
     @Test
     void getDisplayTypeReturnsExpectedValue() {
@@ -51,7 +52,8 @@ class ConditionalTwoFactorAuthenticatorFactoryTest {
 
     @Test
     void getHelpTextReturnsExpectedValue() {
-        assertThat(factory.getHelpText(), is("Validates an OTP sent by SMS or an authenticator app"));
+        assertThat(
+                factory.getHelpText(), is("Validates an OTP sent by SMS or an authenticator app"));
     }
 
     @Test
