@@ -21,7 +21,7 @@ public class ConditionalTwoFactorAuthenticator implements Authenticator {
         UserModel user = context.getUser();
         if (otpRequired(context)) {
             if (user.getAttributes().containsKey(MOBILE_PHONE_ATTR)) {
-                SmsProvider provider = getSmsProvider();
+                var provider = getSmsProvider();
 
                 provider.send(
                         context.getAuthenticationSession(),
@@ -38,7 +38,7 @@ public class ConditionalTwoFactorAuthenticator implements Authenticator {
 
     @Override
     public void action(AuthenticationFlowContext context) {
-        SmsProvider provider = getSmsProvider();
+        var provider = getSmsProvider();
         MultivaluedMap<String, String> form = context.getHttpRequest().getDecodedFormParameters();
         String otp = form.getFirst("otp");
 
