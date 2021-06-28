@@ -35,7 +35,7 @@ public class ConditionalOtpConfigureOtpAction implements RequiredActionProvider 
 
     @Override
     public void processAction(RequiredActionContext context) {
-        SmsProvider provider = getSmsProvider();
+        var provider = getSmsProvider();
         MultivaluedMap<String, String> form = context.getHttpRequest().getDecodedFormParameters();
         UserModel user = context.getUser();
         if (form.containsKey(OTP_FIELD)) {

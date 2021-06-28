@@ -31,7 +31,7 @@ public class MessageBirdSmsProvider implements SmsProvider {
     @Override
     public void send(AuthenticationSessionModel session, String phoneNumber) {
         try {
-            VerifyRequest request = new VerifyRequest(phoneNumber);
+            var request = new VerifyRequest(phoneNumber);
             if (originator != null) request.setOriginator(originator);
             String id = getClient().sendVerifyToken(request).getId();
             session.setUserSessionNote(MESSAGEBIRD_VERIFY_TOKEN_AUTH_NOTE, id);
