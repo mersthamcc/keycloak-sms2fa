@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'jacoco'
     id "org.sonarqube" version "3.2.0"
-    id "com.diffplug.spotless"
 }
 
 sonarqube {
@@ -35,7 +34,7 @@ test {
 }
 
 dependencies {
-    compileOnly "org.keycloak:keycloak-core:$keycloak_version",
+    implementation "org.keycloak:keycloak-core:$keycloak_version",
                 "org.keycloak:keycloak-server-spi:$keycloak_version",
                 "org.keycloak:keycloak-server-spi-private:$keycloak_version",
                 "org.keycloak:keycloak-services:$keycloak_version",
@@ -65,19 +64,6 @@ dependencies {
 task copyToLib(type: Copy) {
     into "$buildDir/libs"
     from configurations.runtime
-}
-
-
-spotless {
-    java {
-        target '**/*.java'
-        googleJavaFormat('1.9').aosp()
-        importOrder '', 'javax', 'java', '\\#'
-    }
-
-    groovyGradle {
-        target '**/*.gradle'
-    }
 }
 
 jacocoTestReport {
